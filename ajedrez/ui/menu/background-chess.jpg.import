@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dj2kh4kgmsn7i"
-path="res://.godot/imported/menu_imagen.jpg-589a19b74c7e13b928b8d65b5b1fdec9.ctex"
+uid="uid://b6ogn5acw5yvw"
+path="res://.godot/imported/background-chess.jpg-e16914f8ec0fb82652a111721a351a63.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ui/menu/menu_imagen.jpg"
-dest_files=["res://.godot/imported/menu_imagen.jpg-589a19b74c7e13b928b8d65b5b1fdec9.ctex"]
+source_file="res://ui/menu/background-chess.jpg"
+dest_files=["res://.godot/imported/background-chess.jpg-e16914f8ec0fb82652a111721a351a63.ctex"]
 
 [params]
 
