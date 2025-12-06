@@ -2,7 +2,7 @@ extends Control
 
 @onready var slider: HSlider = $MusicSlider
 @onready var popup: Label = $VolumePopup
-@export var audio_bus_name: String
+@export var audio_bus_name: String = "Music"
 
 var audio_bus_id: int
 var hide_timer := Timer.new()
@@ -23,7 +23,7 @@ func _on_value_changed(new_value: float) -> void:
 	AudioServer.set_bus_volume_db(audio_bus_id, db)
 
 	# Mostrar el popup con el porcentaje
-	popup.text = str(round(new_value * 100)) + "%"
+	popup.text = str(int(new_value * 100)) + "%"
 	popup.visible = true
 
 	# Posicionar el popup sobre el cursor del slider
