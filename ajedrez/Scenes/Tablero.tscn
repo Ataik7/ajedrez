@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://c533isxoj028g"]
+
+[node name="TableroJuego" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Button" type="Button" parent="CanvasLayer"]
+anchors_preset = -1
+offset_left = 1078.0
+offset_top = 613.0
+offset_right = 1154.0
+offset_bottom = 644.0
+text = "Reiniciar"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
