@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://dii7eldo2i30"]
+
+[node name="texture_holder" type="Sprite2D"]

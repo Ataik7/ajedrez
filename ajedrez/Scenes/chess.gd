@@ -1,6 +1,8 @@
 extends Sprite2D
 
 const BOARD_SIZE = 8
+const CELL_WIDTH = 18
+const TEXTURE_HOLDER = preload("uid://dii7eldo2i30")
 
 const B_BISHOP = preload("uid://cysffjfe1h2s0")
 const B_KING = preload("uid://b6usr5pro2tmv")
@@ -20,11 +22,42 @@ const W_ROOK = preload("uid://dfjihaicpkbir")
 @onready var turn: Sprite2D = $Turn
 
 #Variables
-
+# -6 = black king
+# -5 = black queen
+# -4 = black rook
+# -3 = black bishop
+# -2 = black knight
+# -1 = black pawn
+# 0 = empty
+# 6 = white king
+# 5 = white queen
+# 4 = white rook
+# 3 = white bishop
+# 2 = white knight
+# 1 = white pawn
+var board : Array
+var white : bool
+var state : bool
+var moves = []
+var selected_piece : Vector2
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
-
+	board.append([4, 2, 3, 5, 6, 3, 2, 4])
+	board.append([1, 1, 1, 1, 1, 1, 1, 1])
+	board.append([0, 0, 0, 0, 0, 0, 0, 0])
+	board.append([0, 0, 0, 0, 0, 0, 0, 0])
+	board.append([0, 0, 0, 0, 0, 0, 0, 0])
+	board.append([0, 0, 0, 0, 0, 0, 0, 0])
+	board.append([-1, -1, -1, -1, -1, -1, -1, -1])
+	board.append([-4, -2, -3, -5, -6, -3, -2, -4])
+	
+	display_board()
+	
+	
+func display_board():
+	for i in BOARD_SIZE:
+		for j in BOARD_SIZE:
+			var holder = TEXTURE_HOLDER.instantiate()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
