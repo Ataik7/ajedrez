@@ -8,6 +8,7 @@ texture = ExtResource("1_qxrlw")
 script = ExtResource("2_wrm1d")
 
 [node name="Pieces" type="Node2D" parent="."]
+y_sort_enabled = true
 
 [node name="Dots" type="Node2D" parent="."]
 
@@ -15,3 +16,9 @@ script = ExtResource("2_wrm1d")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2(3, 3)
+
+[node name="MarkerInit" type="Marker2D" parent="."]
+position = Vector2(-57, -56)
+
+[node name="MarkerFin" type="Marker2D" parent="."]
+position = Vector2(56, 56)
