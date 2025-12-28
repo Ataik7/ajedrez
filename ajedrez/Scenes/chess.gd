@@ -58,7 +58,20 @@ func display_board():
 	for i in BOARD_SIZE:
 		for j in BOARD_SIZE:
 			var holder = TEXTURE_HOLDER.instantiate()
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+			pieces.add_child(holder)
+			holder.global_position = Vector2(j * CELL_WIDTH + (CELL_WIDTH/2), -i * CELL_WIDTH - (CELL_WIDTH/2))
+			
+			match board[i][j]:
+				-6: holder.texture = B_KING
+				-5: holder.texture = B_QUEEN
+				-4: holder.texture = B_ROOK
+				-3: holder.texture = B_BISHOP
+				-2: holder.texture = B_KNIGHT
+				-1: holder.texture = B_PAWN
+				0: holder.texture = null
+				6: holder.texture = W_KING
+				5: holder.texture = W_QUEEN
+				4: holder.texture = W_ROOK
+				3: holder.texture = W_BISHOP
+				2: holder.texture = W_KNIGHT
+				1: holder.texture = W_PAWN

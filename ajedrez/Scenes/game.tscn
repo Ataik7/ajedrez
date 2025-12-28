@@ -12,3 +12,6 @@ script = ExtResource("2_wrm1d")
 [node name="Dots" type="Node2D" parent="."]
 
 [node name="Turn" type="Sprite2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(3, 3)
