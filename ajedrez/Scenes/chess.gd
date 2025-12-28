@@ -4,7 +4,7 @@ extends Sprite2D
 @onready var marker_init: Marker2D = $MarkerInit
 @onready var marker_fin: Marker2D = $MarkerFin
 
-# 1. ESCALA: Bajar esto si se ven gigantes 
+# 1. ESCALA: Bajar esto si se ven gigantes 
 @export var tamano_pieza : float = 0.75
 
 # 2. ALTURA: Subir o bajar las piezas sin mover los markers
@@ -35,8 +35,12 @@ var white : bool
 var state : bool
 var moves = []
 var selected_piece : Vector2
+var debug_rect : Rect2 # Variable para guardar el dibujo
 
 func _ready() -> void:
+	# Importante: Activar ordenamiento Y para que se tapen bien
+	pieces.y_sort_enabled = true
+	
 	board.append([4, 2, 3, 5, 6, 3, 2, 4])
 	board.append([1, 1, 1, 1, 1, 1, 1, 1])
 	board.append([0, 0, 0, 0, 0, 0, 0, 0])
@@ -52,48 +56,51 @@ func _ready() -> void:
 func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		
-		# 1. Coordenadas locales y límites (lo que ya tenías)
 		var mouse_pos = to_local(get_global_mouse_position())
-		var min_x = min(marker_init.position.x, marker_fin.position.x)
-		var max_x = max(marker_init.position.x, marker_fin.position.x)
-		var min_y = min(marker_init.position.y, marker_fin.position.y)
-		var max_y = max(marker_init.position.y, marker_fin.position.y)
-
-		# Si estamos fuera, no hacemos nada
+		
+		# --- LÓGICA DE BORDES (FLOOR) ---
+		# Usamos esta porque tus markers están en las esquinas del tablero
+		var min_x = marker_init.position.x
+		var max_x = marker_fin.position.x
+		var min_y = marker_init.position.y
+		var max_y = marker_fin.position.y
+		
+		# Verificar si estamos dentro del tablero
 		if mouse_pos.x < min_x or mouse_pos.x > max_x or mouse_pos.y < min_y or mouse_pos.y > max_y:
 			return
 
-		# --- CALCULAR CASILLA ---
+		# Calculamos tamaño de casilla (Total / 8)
+		var ancho_total = max_x - min_x
+		var alto_total = max_y - min_y
 		
-		# Ancho y Alto total entre chinchetas
-		# Nota: Usamos abs() (valor absoluto) para evitar líos con números negativos
-		var ancho_total = abs(marker_fin.position.x - marker_init.position.x)
-		var alto_total = abs(marker_fin.position.y - marker_init.position.y)
+		var size_x = ancho_total / BOARD_SIZE
+		var size_y = alto_total / BOARD_SIZE
 		
-		# Eje X: Fácil. Distancia desde el inicio / ancho total
-		var dist_x = mouse_pos.x - marker_init.position.x
-		var pct_x = dist_x / (marker_fin.position.x - marker_init.position.x)
-		var grid_x = round(pct_x * (BOARD_SIZE - 1))
+		# Fórmulas de Grid
+		var grid_x = floor((mouse_pos.x - min_x) / size_x)
+		var visual_row = floor((mouse_pos.y - min_y) / size_y)
+		var grid_y = (BOARD_SIZE - 1) - visual_row # Invertir Y
 		
-		# Eje Y: Un poco más truculento porque lo invertimos antes (blancas abajo)
-		# Usamos la misma lógica inversa que en el display_board
-		var dist_y = mouse_pos.y - marker_fin.position.y
-		var pct_y = dist_y / (marker_init.position.y - marker_fin.position.y)
-		var grid_y = round(pct_y * (BOARD_SIZE - 1))
-		
-		# Nos aseguramos de que no de un número loco como -1 o 8
-		grid_x = clamp(grid_x, 0, BOARD_SIZE - 1)
-		grid_y = clamp(grid_y, 0, BOARD_SIZE - 1)
-		
-		print("Has hecho clic en la casilla: ", grid_x, ", ", grid_y)
-		
-		# Vemos qué hay en esa casilla
-		var pieza_id = board[grid_y][grid_x]
-		if pieza_id != 0:
-			print("¡Has tocado una pieza! ID: ", pieza_id)
-		else:
-			print("Casilla vacía")
+		# Seguridad
+		if grid_x >= 0 and grid_x < BOARD_SIZE and grid_y >= 0 and grid_y < BOARD_SIZE:
+			var id = board[grid_y][grid_x]
+			print("Clic: ", grid_x, ", ", grid_y, " | ID: ", id)
 			
+			if id != 0:
+				selected_piece = Vector2(grid_x, grid_y)
+			
+			# --- DIBUJAR DEBUG ---
+			var draw_x = min_x + (grid_x * size_x)
+			var draw_y = min_y + (visual_row * size_y)
+			debug_rect = Rect2(draw_x, draw_y, size_x, size_y)
+			queue_redraw()
+
+func _draw():
+	# Dibuja un cuadrado amarillo transparente donde hiciste clic
+	if debug_rect.size.x > 0:
+		draw_rect(debug_rect, Color(1, 1, 0, 0.5), true) # Relleno amarillo
+		draw_rect(debug_rect, Color(1, 0, 0, 1), false, 2.0) # Borde rojo
+
 func display_board():
 	for child in pieces.get_children():
 		child.queue_free()
