@@ -18,7 +18,7 @@ y_sort_enabled = true
 zoom = Vector2(3, 3)
 
 [node name="MarkerInit" type="Marker2D" parent="."]
-position = Vector2(-57, -56)
+position = Vector2(-65, -65)
 
 [node name="MarkerFin" type="Marker2D" parent="."]
-position = Vector2(56, 56)
+position = Vector2(65, 65)
