@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d17xo7rj38ij2"
-path="res://.godot/imported/casilla_blanca.png-05f5f3983d08c2fa8514d4f4d9447b95.ctex"
+uid="uid://b6usr5pro2tmv"
+path="res://.godot/imported/B_King.png-581266a51745e25366d4541df93b555f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Tablero/casilla_blanca.png"
-dest_files=["res://.godot/imported/casilla_blanca.png-05f5f3983d08c2fa8514d4f4d9447b95.ctex"]
+source_file="res://Assets/pieces/black/B_King.png"
+dest_files=["res://.godot/imported/B_King.png-581266a51745e25366d4541df93b555f.ctex"]
 
 [params]
 

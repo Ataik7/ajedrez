@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Ajedrez"
-run/main_scene="uid://ufm0ficy0rom"
+run/main_scene="uid://dx8sb0yjqkq5g"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
 

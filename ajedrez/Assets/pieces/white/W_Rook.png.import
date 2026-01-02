@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwmihvi84sgg2"
-path="res://.godot/imported/board_plain_04.png-2f05b537b92e283ce3cafba27e732487.ctex"
+uid="uid://dfjihaicpkbir"
+path="res://.godot/imported/W_Rook.png-27444b5d040c149d542cc7fb7203e0f5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Tablero/board_plain_04.png"
-dest_files=["res://.godot/imported/board_plain_04.png-2f05b537b92e283ce3cafba27e732487.ctex"]
+source_file="res://Assets/pieces/white/W_Rook.png"
+dest_files=["res://.godot/imported/W_Rook.png-27444b5d040c149d542cc7fb7203e0f5.ctex"]
 
 [params]
 

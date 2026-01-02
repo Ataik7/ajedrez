@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cl3r1h8pfbf0j"
-path="res://.godot/imported/casilla_negra.png-a4ac400260306d7ec31d1f54dbf2f907.ctex"
+uid="uid://bec32ampjjrqn"
+path="res://.godot/imported/B_Pawn.png-d97274e03f385b5f1d03c5a1478c7cf0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Tablero/casilla_negra.png"
-dest_files=["res://.godot/imported/casilla_negra.png-a4ac400260306d7ec31d1f54dbf2f907.ctex"]
+source_file="res://Assets/pieces/black/B_Pawn.png"
+dest_files=["res://.godot/imported/B_Pawn.png-d97274e03f385b5f1d03c5a1478c7cf0.ctex"]
 
 [params]
 

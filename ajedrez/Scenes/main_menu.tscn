@@ -1,10 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://dx8sb0yjqkq5g"]
+[gd_scene load_steps=12 format=3 uid="uid://dx8sb0yjqkq5g"]
 
-[ext_resource type="Script" uid="uid://cbm1d7wog058s" path="res://Scripts/main_menu.gd" id="1_1ehe0"]
+[ext_resource type="Script" uid="uid://cbm1d7wog058s" path="res://Scripts/ui/main_menu.gd" id="1_1ehe0"]
 [ext_resource type="Texture2D" uid="uid://b6ogn5acw5yvw" path="res://ui/menu/background-chess.jpg" id="2_ce3w2"]
 [ext_resource type="FontFile" uid="uid://cflo4mxbqu2vb" path="res://Fonts/GrapeSoda.ttf" id="3_n45e2"]
 [ext_resource type="AudioStream" uid="uid://oim5soaqki2l" path="res://Sounds/music/Zelda Main Theme.mp3" id="4_ce3w2"]
-[ext_resource type="Script" uid="uid://4wpaqu5tpi1v" path="res://Scripts/control.gd" id="5_n45e2"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4gkdq"]
 texture = ExtResource("2_ce3w2")
@@ -183,7 +182,6 @@ offset_right = 218.0
 offset_bottom = 173.5
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("5_n45e2")
 
 [node name="MusicSlider" type="HSlider" parent="Options/Control"]
 layout_mode = 0
