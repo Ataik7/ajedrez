@@ -106,3 +106,42 @@ func hay_obstaculos(board, start, end) -> bool:
 		actual += Vector2(paso_x, paso_y)
 		
 	return false
+
+# --- DETECTOR DE JAQUE ---
+# 1. Busca dónde está el Rey de un color
+func encontrar_rey(board: Array, es_blanco: bool) -> Vector2:
+	var codigo_rey = 6 if es_blanco else -6
+	
+	for y in range(8):
+		for x in range(8):
+			if board[y][x] == codigo_rey:
+				return Vector2(x, y)
+				
+	return Vector2(-1, -1) # Error raro (no hay rey)
+
+# 2. Comprueba si el Rey de ese color está siendo atacado
+func esta_en_jaque(board: Array, es_blanco: bool) -> bool:
+	# A. ¿Dónde está mi Rey?
+	var pos_rey = encontrar_rey(board, es_blanco)
+	
+	# B. Miramos todas las piezas del tablero
+	for y in range(8):
+		for x in range(8):
+			var pieza = board[y][x]
+			if pieza == 0: continue
+			
+			var es_pieza_blanca = pieza > 0
+			
+			# Si la pieza es AMIGA, no me ataca (saltamos)
+			if es_pieza_blanca == es_blanco:
+				continue
+			
+			# Si la pieza es ENEMIGA, preguntamos:
+			# "¿Puedes moverte legalmente hasta la cabeza de mi Rey?"
+			var pos_enemiga = Vector2(x, y)
+			
+			# Usamos tu función maestra para validar el ataque
+			if es_movimiento_valido(board, pos_enemiga, pos_rey):
+				return true # ¡SÍ! Hay alguien que puede matarme
+				
+	return false # Nadie me apunta

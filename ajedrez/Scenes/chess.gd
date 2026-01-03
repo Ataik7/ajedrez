@@ -93,23 +93,45 @@ func _input(event):
 				actualizar_debug(grid_x, visual_row, size_x, size_y)
 				return
 			
-			# JUEZ
+			# 1. JUEZ: ¿La pieza se mueve así?
 			var es_legal = MoveCalculator.es_movimiento_valido(board, GameState.selected_piece, Vector2(grid_x, grid_y))
 			
 			if es_legal == false:
-				print("🚫 Movimiento ilegal")
+				print("🚫 Movimiento ilegal (físico)")
 				return
 
+			# --- DATOS PARA EL SIMULACRO ---
 			var pos_origen = GameState.selected_piece
-			# Convertimos a INT para leer el array
-			var pieza_a_mover = board[int(pos_origen.y)][int(pos_origen.x)]
+			var pos_destino = Vector2(grid_x, grid_y)
+			var pieza_mover = board[int(pos_origen.y)][int(pos_origen.x)]
+			var pieza_comida = board[int(pos_destino.y)][int(pos_destino.x)] # Guardamos por si hay que deshacer
 			
-			# Convertimos a INT para escribir en el array
-			board[int(grid_y)][int(grid_x)] = pieza_a_mover
+			# 2. HACEMOS EL MOVIMIENTO (Provisional)
+			board[int(pos_destino.y)][int(pos_destino.x)] = pieza_mover
 			board[int(pos_origen.y)][int(pos_origen.x)] = 0
+			
+			# 3. VERIFICAMOS: ¿Me he suicidado?
+			# Preguntamos si el rey de mi color está en jaque ahora mismo
+			if MoveCalculator.esta_en_jaque(board, GameState.is_white_turn):
+				print("🚫 ¡No puedes ponerte en JAQUE a ti mismo!")
+				
+				# DESHACER EL MOVIMIENTO (Rollback)
+				board[int(pos_origen.y)][int(pos_origen.x)] = pieza_mover
+				board[int(pos_destino.y)][int(pos_destino.x)] = pieza_comida
+				return # Cortamos aquí, no cambiamos turno
+				
+			# 4. SI LLEGAMOS AQUÍ, EL MOVIMIENTO ES VÁLIDO
+			# Ya está movido en el array, así que solo finalizamos.
 			
 			GameState.selected_piece = Vector2(-1, -1)
 			GameState.change_turn() 
+			
+			# 5. VERIFICAMOS: ¿He puesto en Jaque al enemigo?
+			# Ahora el turno es del enemigo, así que preguntamos por SU rey
+			if MoveCalculator.esta_en_jaque(board, GameState.is_white_turn):
+				print("⚔️ ¡¡¡ JAQUE AL REY !!! ⚔️")
+			else:
+				print("Turno cambiado. Situación segura.")
 			
 			debug_rect = Rect2(0,0,0,0)
 			queue_redraw()
