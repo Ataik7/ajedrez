@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameState="*res://Scripts/core/game_state.gd"
+MoveCalculator="*res://Scripts/movement/move_calculator.gd"
 
 [rendering]
 

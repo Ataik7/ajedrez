@@ -102,8 +102,17 @@ func _input(event):
 				actualizar_debug(grid_x, visual_row, size_x, size_y)
 				return
 			
-			# MOVER
-			# Recuperamos la pieza desde la posición guardada en Global
+			# --- VALIDACIÓN DEL JUEZ ---
+			# Le preguntamos al script nuevo si el movimiento es legal
+			var es_legal = MoveCalculator.es_movimiento_valido(board, GameState.selected_piece, Vector2(grid_x, grid_y))
+			
+			if es_legal == false:
+				print("🚫 Movimiento ilegal para esa pieza")
+				# Opcional: Sonido de error
+				return
+			# ---------------------------
+
+			# MOVER (Si el código llega aquí, es que el juez dijo que sí)
 			var pos_origen = GameState.selected_piece
 			var pieza_a_mover = board[pos_origen.y][pos_origen.x]
 			
