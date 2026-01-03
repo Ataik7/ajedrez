@@ -30,12 +30,11 @@ const W_ROOK = preload("uid://dfjihaicpkbir")
 @onready var pieces: Node2D = $Pieces
 
 var board : Array
-var white : bool = true # TRUE = Turno Blancas, FALSE = Turno Negras
-var selected_piece : Vector2 = Vector2(-1, -1) # (-1,-1) significa nada seleccionado
 var debug_rect : Rect2 
 
 func _ready() -> void:
 	pieces.y_sort_enabled = true
+	GameState.reset_game() # Nos aseguramos de empezar limpios
 	
 	# Inicializar tablero
 	board.append([4, 2, 3, 5, 6, 3, 2, 4])
@@ -46,8 +45,6 @@ func _ready() -> void:
 	board.append([0, 0, 0, 0, 0, 0, 0, 0])
 	board.append([-1, -1, -1, -1, -1, -1, -1, -1])
 	board.append([-4, -2, -3, -5, -6, -3, -2, -4])
-	
-	print("--- INICIO DEL JUEGO: Turno Blancas ---")
 	
 	await get_tree().process_frame
 	display_board()
@@ -81,50 +78,44 @@ func _input(event):
 		var pieza_clicada = board[grid_y][grid_x]
 		
 		# CASO A: No tengo nada seleccionado -> Intento seleccionar
-		if selected_piece == Vector2(-1, -1):
-			if pieza_clicada == 0:
-				return # Clic en aire
+		if GameState.selected_piece == Vector2(-1, -1):
+			if pieza_clicada == 0: return
 			
-			# Validar turno
-			if white and pieza_clicada < 0:
-				print("🚫 Turno de BLANCAS. No toques las negras.")
+			# Validar turno usando el Global
+			if GameState.is_white_turn and pieza_clicada < 0:
+				print("🚫 Turno de BLANCAS")
 				return
-			if not white and pieza_clicada > 0:
-				print("🚫 Turno de NEGRAS. No toques las blancas.")
+			if not GameState.is_white_turn and pieza_clicada > 0:
+				print("🚫 Turno de NEGRAS")
 				return
 				
-			# Seleccionar
-			selected_piece = Vector2(grid_x, grid_y)
-			print("Seleccionada: ", selected_piece)
+			# Guardar en Global
+			GameState.selected_piece = Vector2(grid_x, grid_y)
+			print("Seleccionada: ", GameState.selected_piece)
 			actualizar_debug(grid_x, visual_row, size_x, size_y)
 			
-		# CASO B: Ya tengo algo seleccionado -> Intento mover o cambiar
+		# CASO B: INTENTO MOVER
 		else:
-			# Si hago clic en otra pieza -> Cambio la selección
-			if (white and pieza_clicada > 0) or (not white and pieza_clicada < 0):
-				selected_piece = Vector2(grid_x, grid_y)
-				print("Cambio de selección: ", selected_piece)
+			# Cambio de selección
+			if (GameState.is_white_turn and pieza_clicada > 0) or (not GameState.is_white_turn and pieza_clicada < 0):
+				GameState.selected_piece = Vector2(grid_x, grid_y)
 				actualizar_debug(grid_x, visual_row, size_x, size_y)
 				return
 			
-			# Si hago clic en vacío o enemigo -> mover (Teletransporte por ahora)
-			print("Moviendo de ", selected_piece, " a ", Vector2(grid_x, grid_y))
+			# MOVER
+			# Recuperamos la pieza desde la posición guardada en Global
+			var pos_origen = GameState.selected_piece
+			var pieza_a_mover = board[pos_origen.y][pos_origen.x]
 			
-			# 1. Mover datos en el array
-			var pieza_a_mover = board[selected_piece.y][selected_piece.x]
-			board[grid_y][grid_x] = pieza_a_mover # Poner en destino
-			board[selected_piece.y][selected_piece.x] = 0 # Borrar de origen
+			board[grid_y][grid_x] = pieza_a_mover
+			board[pos_origen.y][pos_origen.x] = 0
 			
-			# 2. Resetear selección y Cambiar turno
-			selected_piece = Vector2(-1, -1)
-			debug_rect = Rect2(0,0,0,0) # Borrar cuadrado amarillo
+			# Limpieza Global
+			GameState.selected_piece = Vector2(-1, -1)
+			GameState.change_turn() # ¡Usamos la función del Global!
+			
+			debug_rect = Rect2(0,0,0,0)
 			queue_redraw()
-			
-			white = !white # Invertir turno
-			if white: print("--- Turno BLANCAS ---")
-			else: print("--- Turno NEGRAS ---")
-			
-			# 3. Actualizar visuales
 			display_board()
 
 # Función auxiliar para dibujar el cuadrado amarillo
