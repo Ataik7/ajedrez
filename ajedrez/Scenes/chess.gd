@@ -4,10 +4,7 @@ extends Sprite2D
 @onready var marker_init: Marker2D = $MarkerInit
 @onready var marker_fin: Marker2D = $MarkerFin
 
-# 1. ESCALA
 @export var tamano_pieza : float = 0.75
-
-# 2. ALTURA
 @export var ajuste_altura : float = -6.0
 
 const BOARD_SIZE = 8
@@ -34,9 +31,8 @@ var debug_rect : Rect2
 
 func _ready() -> void:
 	pieces.y_sort_enabled = true
-	GameState.reset_game() # Nos aseguramos de empezar limpios
+	GameState.reset_game()
 	
-	# Inicializar tablero
 	board.append([4, 2, 3, 5, 6, 3, 2, 4])
 	board.append([1, 1, 1, 1, 1, 1, 1, 1])
 	board.append([0, 0, 0, 0, 0, 0, 0, 0])
@@ -54,14 +50,13 @@ func _input(event):
 		
 		var mouse_pos = to_local(get_global_mouse_position())
 		
-		# --- LÓGICA DE DETECCIÓN (Markers en esquinas) ---
 		var min_x = marker_init.position.x
 		var max_x = marker_fin.position.x
 		var min_y = marker_init.position.y
 		var max_y = marker_fin.position.y
 		
 		if mouse_pos.x < min_x or mouse_pos.x > max_x or mouse_pos.y < min_y or mouse_pos.y > max_y:
-			return # Clic fuera
+			return 
 
 		var size_x = (max_x - min_x) / BOARD_SIZE
 		var size_y = (max_y - min_y) / BOARD_SIZE
@@ -70,18 +65,16 @@ func _input(event):
 		var visual_row = floor((mouse_pos.y - min_y) / size_y)
 		var grid_y = (BOARD_SIZE - 1) - visual_row
 		
-		# Seguridad de rango
 		if grid_x < 0 or grid_x >= BOARD_SIZE or grid_y < 0 or grid_y >= BOARD_SIZE:
 			return
 
-		# --- LÓGICA DE JUEGO ---
-		var pieza_clicada = board[grid_y][grid_x]
+		# --- CORRECCIÓN AQUÍ: Usamos int() ---
+		var pieza_clicada = board[int(grid_y)][int(grid_x)]
 		
-		# CASO A: No tengo nada seleccionado -> Intento seleccionar
+		# CASO A: INTENTO SELECCIONAR
 		if GameState.selected_piece == Vector2(-1, -1):
 			if pieza_clicada == 0: return
 			
-			# Validar turno usando el Global
 			if GameState.is_white_turn and pieza_clicada < 0:
 				print("🚫 Turno de BLANCAS")
 				return
@@ -89,45 +82,40 @@ func _input(event):
 				print("🚫 Turno de NEGRAS")
 				return
 				
-			# Guardar en Global
 			GameState.selected_piece = Vector2(grid_x, grid_y)
 			print("Seleccionada: ", GameState.selected_piece)
 			actualizar_debug(grid_x, visual_row, size_x, size_y)
 			
 		# CASO B: INTENTO MOVER
 		else:
-			# Cambio de selección
 			if (GameState.is_white_turn and pieza_clicada > 0) or (not GameState.is_white_turn and pieza_clicada < 0):
 				GameState.selected_piece = Vector2(grid_x, grid_y)
 				actualizar_debug(grid_x, visual_row, size_x, size_y)
 				return
 			
-			# --- VALIDACIÓN DEL JUEZ ---
-			# Le preguntamos al script nuevo si el movimiento es legal
+			# JUEZ
 			var es_legal = MoveCalculator.es_movimiento_valido(board, GameState.selected_piece, Vector2(grid_x, grid_y))
 			
 			if es_legal == false:
-				print("🚫 Movimiento ilegal para esa pieza")
-				# Opcional: Sonido de error
+				print("🚫 Movimiento ilegal")
 				return
-			# ---------------------------
 
-			# MOVER (Si el código llega aquí, es que el juez dijo que sí)
+			# --- CORRECCIÓN AQUÍ TAMBIÉN: Usamos int() ---
 			var pos_origen = GameState.selected_piece
-			var pieza_a_mover = board[pos_origen.y][pos_origen.x]
+			# Convertimos a INT para leer el array
+			var pieza_a_mover = board[int(pos_origen.y)][int(pos_origen.x)]
 			
-			board[grid_y][grid_x] = pieza_a_mover
-			board[pos_origen.y][pos_origen.x] = 0
+			# Convertimos a INT para escribir en el array
+			board[int(grid_y)][int(grid_x)] = pieza_a_mover
+			board[int(pos_origen.y)][int(pos_origen.x)] = 0
 			
-			# Limpieza Global
 			GameState.selected_piece = Vector2(-1, -1)
-			GameState.change_turn() # ¡Usamos la función del Global!
+			GameState.change_turn() 
 			
 			debug_rect = Rect2(0,0,0,0)
 			queue_redraw()
 			display_board()
 
-# Función auxiliar para dibujar el cuadrado amarillo
 func actualizar_debug(gx, visual_r, sx, sy):
 	var min_x = marker_init.position.x
 	var min_y = marker_init.position.y
@@ -147,10 +135,8 @@ func display_board():
 	
 	var ancho_total = marker_fin.position.x - marker_init.position.x
 	var alto_total = marker_fin.position.y - marker_init.position.y
-	
 	var size_x = ancho_total / BOARD_SIZE
 	var size_y = alto_total / BOARD_SIZE
-	
 	var centro_x = size_x / 2
 	var centro_y = size_y / 2
 
