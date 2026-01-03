@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://dx8sb0yjqkq5g"]
+[gd_scene load_steps=13 format=3 uid="uid://dx8sb0yjqkq5g"]
 
 [ext_resource type="Script" uid="uid://cbm1d7wog058s" path="res://Scripts/ui/main_menu.gd" id="1_1ehe0"]
 [ext_resource type="Texture2D" uid="uid://b6ogn5acw5yvw" path="res://ui/menu/background-chess.jpg" id="2_ce3w2"]
 [ext_resource type="FontFile" uid="uid://cflo4mxbqu2vb" path="res://Fonts/GrapeSoda.ttf" id="3_n45e2"]
 [ext_resource type="AudioStream" uid="uid://oim5soaqki2l" path="res://Sounds/music/Zelda Main Theme.mp3" id="4_ce3w2"]
+[ext_resource type="Script" uid="uid://dq3rw2s1lndx7" path="res://Scripts/ui/audio_control.gd" id="5_n45e2"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4gkdq"]
 texture = ExtResource("2_ce3w2")
@@ -49,7 +50,7 @@ thickness = 6
 color = Color(0.15294118, 0.5411765, 0.9411765, 1)
 thickness = 6
 
-[node name="MainMenu" type="Control"]
+[node name="MainMenu (Control)" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -67,70 +68,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_4gkdq")
 
-[node name="MainButtons" type="VBoxContainer" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -184.68817
-offset_top = -68.5
-offset_right = 184.68817
-offset_bottom = 176.5
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 9
-
-[node name="Start game" type="Button" parent="MainButtons"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_constants/h_separation = 0
-theme_override_font_sizes/font_size = 30
-theme_override_styles/normal = SubResource("StyleBoxFlat_tfjwl")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_or6mk")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gvx18")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
-text = "Start game
-"
-
-[node name="Options" type="Button" parent="MainButtons"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_constants/h_separation = 0
-theme_override_font_sizes/font_size = 30
-theme_override_styles/normal = SubResource("StyleBoxFlat_tfjwl")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_or6mk")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gvx18")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
-text = "Options
-"
-
-[node name="Exit" type="Button" parent="MainButtons"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
-theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-theme_override_constants/h_separation = 0
-theme_override_font_sizes/font_size = 30
-theme_override_styles/normal = SubResource("StyleBoxFlat_tfjwl")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_or6mk")
-theme_override_styles/hover = SubResource("StyleBoxFlat_gvx18")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
-text = "Exit"
-
-[node name="lblTitle" type="Label" parent="."]
+[node name="TitleLabel" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -150,10 +88,68 @@ theme_override_font_sizes/font_size = 101
 text = "Chess game"
 horizontal_alignment = 1
 
-[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("4_ce3w2")
-autoplay = true
-bus = &"Music"
+[node name="MainButtons" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -184.68817
+offset_top = -68.5
+offset_right = 184.68817
+offset_bottom = 176.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 9
+
+[node name="StartButton" type="Button" parent="MainButtons"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_constants/h_separation = 0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_tfjwl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_or6mk")
+theme_override_styles/hover = SubResource("StyleBoxFlat_gvx18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
+text = "Start game
+"
+
+[node name="OptionsButton" type="Button" parent="MainButtons"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_constants/h_separation = 0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_tfjwl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_or6mk")
+theme_override_styles/hover = SubResource("StyleBoxFlat_gvx18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
+text = "Options
+"
+
+[node name="ExitButton" type="Button" parent="MainButtons"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+theme_override_colors/font_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_constants/h_separation = 0
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleBoxFlat_tfjwl")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_or6mk")
+theme_override_styles/hover = SubResource("StyleBoxFlat_gvx18")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
+text = "Exit"
 
 [node name="Options" type="Panel" parent="."]
 layout_mode = 1
@@ -169,41 +165,78 @@ offset_bottom = 226.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Control" type="Control" parent="Options"]
+[node name="TitleLabel" type="Label" parent="Options"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -210.0
-offset_top = -174.5
-offset_right = 218.0
-offset_bottom = 173.5
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 45.0
 grow_horizontal = 2
-grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+text = "Options"
+horizontal_alignment = 1
 
-[node name="MusicSlider" type="HSlider" parent="Options/Control"]
+[node name="AudioSection" type="VBoxContainer" parent="Options"]
 layout_mode = 0
-offset_left = 30.0
-offset_top = 68.0
-offset_right = 388.0
-offset_bottom = 104.0
+offset_left = -1.0
+offset_top = 60.0
+offset_right = 430.0
+offset_bottom = 137.0
+
+[node name="MusicVolumeLabel" type="Label" parent="Options/AudioSection"]
+layout_mode = 2
+text = "Music Volume"
+
+[node name="panelOptions" type="Control" parent="Options/AudioSection"]
+layout_mode = 2
+script = ExtResource("5_n45e2")
+
+[node name="MusicSlider" type="HSlider" parent="Options/AudioSection/panelOptions"]
+layout_mode = 0
+offset_left = 198.0
+offset_top = -30.0
+offset_right = 366.0
+offset_bottom = 6.0
 theme_override_styles/slider = SubResource("StyleBoxLine_ce3w2")
 theme_override_styles/grabber_area = SubResource("StyleBoxLine_n45e2")
 theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_n45e2")
 max_value = 1.0
-step = 0.05
-value = 1.0
+step = 0.01
 
-[node name="VolumePopup" type="Label" parent="Options/Control"]
+[node name="VolumePopup" type="Label" parent="Options/AudioSection/panelOptions"]
 layout_mode = 0
 offset_left = -366.0
 offset_top = -198.0
 offset_right = -326.0
 offset_bottom = -175.0
 
-[node name="Back" type="Button" parent="Options"]
+[node name="SFXVolumeLabel" type="Label" parent="Options/AudioSection"]
+layout_mode = 2
+text = "SFX Volume"
+
+[node name="SFXControl" type="Control" parent="Options/AudioSection"]
+layout_mode = 2
+script = ExtResource("5_n45e2")
+
+[node name="MusicSlider" type="HSlider" parent="Options/AudioSection/SFXControl"]
+layout_mode = 0
+offset_left = 199.0
+offset_top = -32.0
+offset_right = 367.0
+offset_bottom = 4.0
+theme_override_styles/slider = SubResource("StyleBoxLine_ce3w2")
+theme_override_styles/grabber_area = SubResource("StyleBoxLine_n45e2")
+theme_override_styles/grabber_area_highlight = SubResource("StyleBoxLine_n45e2")
+max_value = 1.0
+step = 0.01
+
+[node name="VolumePopup" type="Label" parent="Options/AudioSection/SFXControl"]
+layout_mode = 0
+offset_left = -366.0
+offset_top = -198.0
+offset_right = -326.0
+offset_bottom = -175.0
+
+[node name="BackButton" type="Button" parent="Options"]
 layout_mode = 0
 offset_left = 33.0
 offset_top = 231.0
@@ -223,18 +256,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_or6mk")
 text = "Back
 "
 
-[node name="lblOptions" type="Label" parent="Options"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 90.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 32
-text = "Options"
-horizontal_alignment = 1
+[node name="VideoSection" type="VBoxContainer" parent="Options"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
 
-[connection signal="pressed" from="MainButtons/Start game" to="." method="_on_start_game_pressed"]
-[connection signal="pressed" from="MainButtons/Options" to="." method="_on_options_pressed"]
-[connection signal="pressed" from="MainButtons/Exit" to="." method="_on_exit_pressed"]
-[connection signal="value_changed" from="Options/Control/MusicSlider" to="Options/Control/MusicSlider" method="_on_value_changed"]
-[connection signal="pressed" from="Options/Back" to="." method="_on_back_options_pressed"]
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_ce3w2")
+autoplay = true
+bus = &"Music"
+
+[connection signal="pressed" from="MainButtons/StartButton" to="." method="_on_start_game_pressed"]
+[connection signal="pressed" from="MainButtons/OptionsButton" to="." method="_on_options_pressed"]
+[connection signal="pressed" from="MainButtons/ExitButton" to="." method="_on_exit_pressed"]
+[connection signal="value_changed" from="Options/AudioSection/panelOptions/MusicSlider" to="Options/AudioSection/panelOptions/MusicSlider" method="_on_value_changed"]
+[connection signal="value_changed" from="Options/AudioSection/SFXControl/MusicSlider" to="Options/AudioSection/SFXControl/MusicSlider" method="_on_value_changed"]
+[connection signal="pressed" from="Options/BackButton" to="." method="_on_back_options_pressed"]
