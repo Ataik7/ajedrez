@@ -100,7 +100,6 @@ func _input(event):
 				print("🚫 Movimiento ilegal")
 				return
 
-			# --- CORRECCIÓN AQUÍ TAMBIÉN: Usamos int() ---
 			var pos_origen = GameState.selected_piece
 			# Convertimos a INT para leer el array
 			var pieza_a_mover = board[int(pos_origen.y)][int(pos_origen.x)]

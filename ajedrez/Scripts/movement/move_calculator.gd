@@ -12,11 +12,34 @@ func es_movimiento_valido(board: Array, start: Vector2, end: Vector2) -> bool:
 	if tipo == 1:
 		return validar_peon(board, start, end, es_blanca, dif_x, dif_y)
 	
+	# --- 2. CABALLO ---
+	if tipo == 2:
+		return validar_caballo(dif_x, dif_y)
+	
+	# --- 3. ALFIL ---
+	if tipo == 3:
+		return validar_alfil(board, start, end, dif_x, dif_y)
+	
 	# --- 4. TORRE ---
 	if tipo == 4:
 		return validar_torre(board, start, end, dif_x, dif_y)
 		
 	return true
+
+# -------------------------------------------------------------------------
+
+# --- REGLAS DEL CABALLO ---
+func validar_caballo(dif_x, dif_y) -> bool:
+	# El caballo salta, así que no miramos obstáculos.
+	# Solo comprobamos la forma de "L": (2 y 1) o (1 y 2)
+	
+	if abs(dif_x) == 2 and abs(dif_y) == 1:
+		return true
+		
+	if abs(dif_x) == 1 and abs(dif_y) == 2:
+		return true
+		
+	return false
 
 # -------------------------------------------------------------------------
 
@@ -40,6 +63,16 @@ func validar_peon(board, start, end, es_blanca, dif_x, dif_y) -> bool:
 		if board[int(end.y)][int(end.x)] != 0: return true
 
 	return false
+
+# --- REGLAS DEL ALFIL ---
+func validar_alfil(board, start, end, dif_x, dif_y) -> bool:
+	if abs(dif_x) != abs(dif_y):
+		return false
+	
+	if hay_obstaculos(board, start, end):
+		return false
+		
+	return true
 
 # --- REGLAS DE LA TORRE ---
 func validar_torre(board, start, end, dif_x, dif_y) -> bool:
