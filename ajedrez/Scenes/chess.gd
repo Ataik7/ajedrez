@@ -126,12 +126,24 @@ func _input(event):
 			GameState.selected_piece = Vector2(-1, -1)
 			GameState.change_turn() 
 			
-			# 5. VERIFICAMOS: ¿He puesto en Jaque al enemigo?
-			# Ahora el turno es del enemigo, así que preguntamos por SU rey
-			if MoveCalculator.esta_en_jaque(board, GameState.is_white_turn):
-				print("⚔️ ¡¡¡ JAQUE AL REY !!! ⚔️")
+			# 5. VERIFICAMOS EL ESTADO DE LA PARTIDA
+			var turno_actual_blancas = GameState.is_white_turn
+			var rey_en_peligro = MoveCalculator.esta_en_jaque(board, turno_actual_blancas)
+			var tiene_salida = MoveCalculator.hay_movimientos_salvadores(board, turno_actual_blancas)
+			
+			if rey_en_peligro:
+				if tiene_salida:
+					print("⚠️ ¡JAQUE! (Aún puedes salvarte)")
+				else:
+					print("¡¡¡ JAQUE MATE !!!")
+					print("Ganador: ", "NEGRAS" if turno_actual_blancas else "BLANCAS")
+					set_process_input(false) # Bloquea el ratón, se acabó el juego.
 			else:
-				print("Turno cambiado. Situación segura.")
+				if not tiene_salida:
+					print("🤝 REY AHOGADO (Stalemate) - ES EMPATE")
+					set_process_input(false)
+				else:
+					print("Turno cambiado. Todo normal.")
 			
 			debug_rect = Rect2(0,0,0,0)
 			queue_redraw()

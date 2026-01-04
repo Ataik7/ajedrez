@@ -136,12 +136,68 @@ func esta_en_jaque(board: Array, es_blanco: bool) -> bool:
 			if es_pieza_blanca == es_blanco:
 				continue
 			
-			# Si la pieza es ENEMIGA, preguntamos:
-			# "¿Puedes moverte legalmente hasta la cabeza de mi Rey?"
+			# Si la pieza es enemigo, preguntamos:
+			# "¿Puedes moverte legalmente hasta la cabeza del Rey?"
 			var pos_enemiga = Vector2(x, y)
 			
 			# Usamos tu función maestra para validar el ataque
 			if es_movimiento_valido(board, pos_enemiga, pos_rey):
-				return true # ¡SÍ! Hay alguien que puede matarme
+				return true # Hay alguien que puede matarme
 				
 	return false # Nadie me apunta
+
+# --- DETECTOR DE FIN DE PARTIDA ---
+
+# Esta función devuelve TRUE si el jugador tiene ALGÚN movimiento legal.
+# Si devuelve FALSE, el jugador está paralizado (Mate o Ahogado).
+func hay_movimientos_salvadores(board: Array, es_turno_blancas: bool) -> bool:
+	
+	# 1. Recorremos TODAS las casillas buscando piezas de mi color
+	for start_y in range(8):
+		for start_x in range(8):
+			var pieza = board[start_y][start_x]
+			
+			# Si está vacía o es del enemigo, pasamos
+			if pieza == 0: continue
+			var es_pieza_blanca = pieza > 0
+			if es_pieza_blanca != es_turno_blancas: continue
+			
+			var start = Vector2(start_x, start_y)
+			
+			# 2. Para cada pieza mía, probamos a moverla a cualquier casilla del tablero
+			for end_y in range(8):
+				for end_x in range(8):
+					var end = Vector2(end_x, end_y)
+					
+					# A. ¿Es un movimiento físico válido?
+					if not es_movimiento_valido(board, start, end):
+						continue
+
+					# B. Simulacro (Igual que en el tablero)
+					# ----------------------------------------------
+					var pieza_destino = board[end_y][end_x]
+					
+					# Regla 0: No comer a los tuyos (ya está en es_movimiento_valido, pero por seguridad)
+					if pieza_destino != 0:
+						var destino_blanca = pieza_destino > 0
+						if destino_blanca == es_pieza_blanca: continue
+					
+					# Hacemos el movimiento en memoria
+					board[end_y][end_x] = pieza
+					board[start_y][start_x] = 0
+					
+					# C. Verificación: ¿Sigo en Jaque tras este movimiento?
+					var sigo_en_jaque = esta_en_jaque(board, es_turno_blancas)
+					
+					# DESHACER (Rollback obligatorio)
+					board[start_y][start_x] = pieza
+					board[end_y][end_x] = pieza_destino
+					
+					# D. Conclusión
+					if sigo_en_jaque == false:
+						# ¡He encontrado un movimiento que me salva!
+						# No hace falta seguir buscando. No es mate.
+						return true 
+	
+	# 3. Si he probado todas las piezas y ninguna me salva
+	return false
