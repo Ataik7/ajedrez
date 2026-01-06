@@ -19,6 +19,15 @@ config/icon="res://icon.svg"
 
 GameState="*res://Scripts/core/game_state.gd"
 MoveCalculator="*res://Scripts/movement/move_calculator.gd"
+SFXPlayer="*res://Scripts/audio/sfx_player.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/stretch/scale_mode="integer"
 
 [rendering]
 

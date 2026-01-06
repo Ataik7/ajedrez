@@ -17,7 +17,7 @@ y_sort_enabled = true
 [node name="Turn" type="Sprite2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(3, 3)
+zoom = Vector2(5.2, 5.2)
 
 [node name="MarkerInit" type="Marker2D" parent="."]
 position = Vector2(-65, -65)

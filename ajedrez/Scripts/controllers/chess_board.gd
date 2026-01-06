@@ -36,7 +36,7 @@ const W_ROOK   = preload("uid://dfjihaicpkbir")
 # ESTADO
 # -----------------------------
 
-var board: Array = []
+var board:  Array = []
 var debug_rect: Rect2
 
 # -----------------------------
@@ -45,7 +45,7 @@ var debug_rect: Rect2
 
 func _ready() -> void:
 	pieces.y_sort_enabled = true
-	GameState.reset_game()
+	GameState. reset_game()
 
 	board.append([4, 2, 3, 5, 6, 3, 2, 4])
 	board.append([1, 1, 1, 1, 1, 1, 1, 1])
@@ -66,7 +66,7 @@ func _ready() -> void:
 func _input(event) -> void:
 	if not (event is InputEventMouseButton):
 		return
-	if not event.pressed:
+	if not event. pressed:
 		return
 	if event.button_index != MOUSE_BUTTON_LEFT:
 		return
@@ -86,7 +86,7 @@ func _input(event) -> void:
 	var size_x = (max_x - min_x) / BOARD_SIZE
 	var size_y = (max_y - min_y) / BOARD_SIZE
 
-	var grid_x = floori((mouse_pos.x - min_x) / size_x)
+	var grid_x = floori((mouse_pos. x - min_x) / size_x)
 	var visual_row = floori((mouse_pos.y - min_y) / size_y)
 	var grid_y = (BOARD_SIZE - 1) - visual_row
 
@@ -127,7 +127,7 @@ func _input(event) -> void:
 			GameState.selected_piece = Vector2(grid_x, grid_y)
 			actualizar_debug(grid_x, visual_row, size_x, size_y)
 			return
-	else:
+	else: 
 		if pieza_clicada < 0:
 			GameState.selected_piece = Vector2(grid_x, grid_y)
 			actualizar_debug(grid_x, visual_row, size_x, size_y)
@@ -157,6 +157,12 @@ func _input(event) -> void:
 		board[pos_origen.y][pos_origen.x] = pieza_mover
 		board[pos_destino.y][pos_destino.x] = pieza_comida
 		return
+
+	# ⭐ REPRODUCIR SONIDO (AÑADIDO)
+	if pieza_comida != 0:
+		SFXPlayer.play_capture()
+	else:
+		SFXPlayer.play_move()
 
 	GameState.update_castling_flags(
 		Vector2i(pos_origen),
@@ -216,7 +222,6 @@ func update_en_passant(from: Vector2i, to: Vector2i, piece: int) -> void:
 	else:
 		GameState.en_passant_target = Vector2i(-1, -1)
 
-
 # -----------------------------
 # DEBUG
 # -----------------------------
@@ -270,7 +275,7 @@ func display_board() -> void:
 
 			holder.position = Vector2(pos_x, pos_y + ajuste_altura)
 
-			match board[i][j]:
+			match board[i][j]: 
 				-6: holder.texture = B_KING
 				-5: holder.texture = B_QUEEN
 				-4: holder.texture = B_ROOK

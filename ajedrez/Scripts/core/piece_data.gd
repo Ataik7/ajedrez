@@ -1,8 +1,14 @@
 extends Node
 class_name PieceData
 
-## Definiciones y utilidades para las piezas de ajedrez
+## -----------------------------
+## Definiciones y utilidades
+## de las piezas de ajedrez
+## -----------------------------
 
+# Enumeración de todas las piezas del juego
+# Las piezas blancas son POSITIVAS
+# Las piezas negras son NEGATIVAS
 enum PieceType {
 	EMPTY = 0,
 	W_PAWN = 1,
@@ -19,23 +25,37 @@ enum PieceType {
 	B_KING = -6
 }
 
+# Tamaño estándar del tablero de ajedrez (8x8)
 const BOARD_SIZE = 8
 
-## Verifica si una pieza es blanca
-static func is_white_piece(piece:  int) -> bool:
+# -------------------------------------------------------------------------
+# UTILIDADES DE COLOR
+# -------------------------------------------------------------------------
+
+# Verifica si una pieza es blanca
+# Devuelve FALSE si la casilla está vacía
+static func is_white_piece(piece: int) -> bool:
 	return piece > 0
 
-## Verifica si una pieza es negra
+
+# Verifica si una pieza es negra
+# Devuelve FALSE si la casilla está vacía
 static func is_black_piece(piece: int) -> bool:
 	return piece < 0
 
-## Verifica si dos piezas son del mismo color
+# Verifica si dos piezas son del mismo color
+# Si alguna es vacía, devuelve FALSE
 static func same_color(piece1: int, piece2: int) -> bool:
 	if piece1 == 0 or piece2 == 0:
 		return false
 	return (piece1 > 0) == (piece2 > 0)
 
-## Obtiene el nombre de una pieza
+# -------------------------------------------------------------------------
+# UTILIDADES DE INFORMACIÓN
+# -------------------------------------------------------------------------
+
+# Devuelve el nombre legible de una pieza
+# Para depuración, mensajes o UI
 static func get_piece_name(piece: int) -> String:
 	match piece:
 		1: return "Peón Blanco"
