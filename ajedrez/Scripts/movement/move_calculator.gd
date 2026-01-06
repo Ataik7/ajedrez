@@ -5,7 +5,8 @@ extends Node
 ## -----------------------------
 
 # Función principal que valida si un movimiento es legal
-func es_movimiento_valido(board: Array, start: Vector2, end: Vector2) -> bool:
+# CAMBIO: Ahora acepta "game_state" como parámetro opcional
+func es_movimiento_valido(board: Array, start: Vector2, end: Vector2, game_state = null) -> bool:
 	# Identificación de la pieza
 	var pieza_id = board[int(start.y)][int(start.x)]
 	var tipo = abs(pieza_id)
@@ -26,7 +27,7 @@ func es_movimiento_valido(board: Array, start: Vector2, end: Vector2) -> bool:
 	
 	# --- 1. PEÓN ---
 	if tipo == 1:
-		return validar_peon(board, start, end, es_blanca, dif_x, dif_y)
+		return validar_peon(board, start, end, es_blanca, dif_x, dif_y, game_state)
 	
 	# --- 2. CABALLO ---
 	if tipo == 2:
@@ -46,7 +47,7 @@ func es_movimiento_valido(board: Array, start: Vector2, end: Vector2) -> bool:
 		
 	# --- 6. REY ---
 	if tipo == 6:
-		return validar_rey(dif_x, dif_y)
+		return validar_rey(board, start, dif_x, dif_y, es_blanca, game_state)
 		
 	return true
 
@@ -55,9 +56,31 @@ func es_movimiento_valido(board: Array, start: Vector2, end: Vector2) -> bool:
 # -------------------------------------------------------------------------
 
 # El rey se mueve una casilla en cualquier dirección
-func validar_rey(dif_x, dif_y) -> bool:
+# CAMBIO: Añadida lógica de Enroque
+func validar_rey(board, start, dif_x, dif_y, es_blanca, game_state) -> bool:
+	# 1. Movimiento estándar (1 casilla)
 	if abs(dif_x) <= 1 and abs(dif_y) <= 1:
 		return true
+	
+	# 2. ENROQUE (Solo si game_state existe)
+	if game_state and abs(dif_x) == 2 and dif_y == 0:
+		var y = int(start.y)
+		var x = int(start.x)
+		
+		# Enroque Corto (Kingside)
+		if dif_x == 2:
+			if not game_state.can_castle_kingside(es_blanca): return false
+			# Verificar que el camino esté libre
+			if board[y][x + 1] != 0 or board[y][x + 2] != 0: return false
+			return true
+			
+		# Enroque Largo (Queenside)
+		if dif_x == -2:
+			if not game_state.can_castle_queenside(es_blanca): return false
+			# Verificar que el camino esté libre
+			if board[y][x - 1] != 0 or board[y][x - 2] != 0 or board[y][x - 3] != 0: return false
+			return true
+
 	return false
 
 # -------------------------------------------------------------------------
@@ -74,7 +97,8 @@ func validar_reina(board, start, end, dif_x, dif_y) -> bool:
 # REGLAS DEL PEÓN
 # -------------------------------------------------------------------------
 
-func validar_peon(board, start, end, es_blanca, dif_x, dif_y) -> bool:
+# CAMBIO: Añadida lógica de En Passant
+func validar_peon(board, start, end, es_blanca, dif_x, dif_y, game_state) -> bool:
 	# Dirección de avance según el color
 	var direccion_avance = 1 if es_blanca else -1
 	
@@ -92,8 +116,14 @@ func validar_peon(board, start, end, es_blanca, dif_x, dif_y) -> bool:
 
 	# Captura en diagonal
 	if abs(dif_x) == 1 and dif_y == direccion_avance:
+		# Captura normal
 		if board[int(end.y)][int(end.x)] != 0:
 			return true
+		
+		# Captura al paso (En Passant)
+		if game_state and game_state.en_passant_target.x != -1:
+			if int(end.x) == game_state.en_passant_target.x and int(end.y) == game_state.en_passant_target.y:
+				return true
 
 	return false
 
@@ -185,6 +215,9 @@ func esta_en_jaque(board: Array, es_blanco: bool) -> bool:
 			
 			# ¿Puede esta pieza capturar al rey?
 			var pos_enemiga = Vector2(x, y)
+			
+			# Nota: Aquí NO pasamos game_state para evitar recursión. 
+			# Las amenazas básicas (caballos, torres, peones) se detectan sin necesidad de enroque.
 			if es_movimiento_valido(board, pos_enemiga, pos_rey):
 				return true
 				

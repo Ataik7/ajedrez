@@ -48,7 +48,7 @@ var ai_move_delay: float = 0.8
 ## -----------------------------
 
 # Estado del tablero y rectángulo de debug para mostrar selección
-var board:  Array = []
+var board: Array = []
 var debug_rect: Rect2
 
 ## -----------------------------
@@ -156,10 +156,12 @@ func _input(event) -> void:
 			return
 
 	# Validar movimiento legal
+	# IMPORTANTE: Aquí se pasa GameState. Si MoveCalculator no está actualizado, fallará aquí.
 	var es_legal = MoveCalculator.es_movimiento_valido(
 		board,
 		GameState.selected_piece,
-		Vector2(grid_x, grid_y)
+		Vector2(grid_x, grid_y),
+		GameState
 	)
 
 	if not es_legal:
@@ -171,23 +173,48 @@ func _input(event) -> void:
 	var pos_destino = Vector2(grid_x, grid_y)
 	var pieza_mover = board[pos_origen.y][pos_origen.x]
 	var pieza_comida = board[pos_destino.y][pos_destino.x]
+	
+	# Detectar En Passant para comer la pieza correcta
+	var captura_al_paso = false
+	# Es un peón, se mueve en diagonal, pero la casilla destino está vacía
+	if abs(pieza_mover) == 1 and pieza_comida == 0 and pos_origen.x != pos_destino.x:
+		captura_al_paso = true
+		pieza_comida = board[pos_origen.y][pos_destino.x] # Pieza que está detrás
 
-	# Ejecutar movimiento
+	# Ejecutar movimiento en memoria
 	board[pos_destino.y][pos_destino.x] = pieza_mover
 	board[pos_origen.y][pos_origen.x] = 0
+	
+	if captura_al_paso:
+		board[pos_origen.y][pos_destino.x] = 0 # Eliminar peón capturado al paso
 
 	# Validar que no se deje en jaque
 	if MoveCalculator.esta_en_jaque(board, GameState.is_white_turn):
 		print("🚫 ¡No puedes ponerte en JAQUE!")
+		# Deshacer cambios
 		board[pos_origen.y][pos_origen.x] = pieza_mover
-		board[pos_destino.y][pos_destino.x] = pieza_comida
+		board[pos_destino.y][pos_destino.x] = pieza_comida if not captura_al_paso else 0
+		if captura_al_paso:
+			board[pos_origen.y][pos_destino.x] = pieza_comida # Restaurar peón enemigo
 		return
 
-	# Reproducir sonido según si hay captura
+	# --- EJECUTAR MOVIMIENTO ESPECIAL: ENROQUE ---
+	# Si el Rey se ha movido 2 casillas, debemos mover la torre también
+	if abs(pieza_mover) == 6 and abs(pos_destino.x - pos_origen.x) == 2:
+		var rook_y = int(pos_origen.y)
+		var rook_x_origen = 7 if pos_destino.x > pos_origen.x else 0
+		var rook_x_destino = int(pos_origen.x + 1) if pos_destino.x > pos_origen.x else int(pos_origen.x - 1)
+		
+		# Mover torre
+		var torre = board[rook_y][rook_x_origen]
+		board[rook_y][rook_x_destino] = torre
+		board[rook_y][rook_x_origen] = 0
+
+	# Reproducir sonido
 	if pieza_comida != 0:
-		SFXPlayer.play_capture()
+		if SFXPlayer: SFXPlayer.play_capture()
 	else:
-		SFXPlayer.play_move()
+		if SFXPlayer: SFXPlayer.play_move()
 
 	# Actualizar flags de enroque y en passant
 	GameState.update_castling_flags(Vector2i(pos_origen), pieza_mover)
@@ -216,6 +243,12 @@ func _process(_delta: float) -> void:
 func execute_ai_turn() -> void:
 	print("🤖 IA pensando...")
 	await get_tree().create_timer(ai_move_delay).timeout
+	
+	# Aseguramos que AIPlayer existe antes de llamar
+	if not AIPlayer:
+		print("ERROR: AIPlayer no está definido.")
+		ai_thinking = false
+		return
 
 	var ai_move = AIPlayer.get_best_move(board, GameState.AI_IS_WHITE)
 
@@ -227,21 +260,38 @@ func execute_ai_turn() -> void:
 	var from = ai_move["from"]
 	var to = ai_move["to"]
 
-	print("🤖 IA mueve:  ", from, " → ", to)
+	print("🤖 IA mueve: ", from, " → ", to)
 
 	# Ejecutar movimiento
 	var pos_origen = from
 	var pos_destino = to
 	var pieza_mover = board[int(pos_origen.y)][int(pos_origen.x)]
 	var pieza_comida = board[int(pos_destino.y)][int(pos_destino.x)]
+	
+	# Lógica En Passant para IA
+	var captura_al_paso = false
+	if abs(pieza_mover) == 1 and pieza_comida == 0 and pos_origen.x != pos_destino.x:
+		captura_al_paso = true
+		pieza_comida = board[int(pos_origen.y)][int(pos_destino.x)]
+		board[int(pos_origen.y)][int(pos_destino.x)] = 0
 
 	board[int(pos_destino.y)][int(pos_destino.x)] = pieza_mover
 	board[int(pos_origen.y)][int(pos_origen.x)] = 0
+	
+	# Lógica Enroque para IA
+	if abs(pieza_mover) == 6 and abs(pos_destino.x - pos_origen.x) == 2:
+		var rook_y = int(pos_origen.y)
+		var rook_x_origen = 7 if pos_destino.x > pos_origen.x else 0
+		var rook_x_destino = int(pos_origen.x + 1) if pos_destino.x > pos_origen.x else int(pos_origen.x - 1)
+		
+		var torre = board[rook_y][rook_x_origen]
+		board[rook_y][rook_x_destino] = torre
+		board[rook_y][rook_x_origen] = 0
 
 	if pieza_comida != 0:
-		SFXPlayer.play_capture()
+		if SFXPlayer: SFXPlayer.play_capture()
 	else:
-		SFXPlayer.play_move()
+		if SFXPlayer: SFXPlayer.play_move()
 
 	GameState.update_castling_flags(Vector2i(pos_origen), pieza_mover)
 	update_en_passant(Vector2i(pos_origen), Vector2i(pos_destino), pieza_mover)
@@ -344,7 +394,7 @@ func display_board() -> void:
 			holder.position = Vector2(pos_x, pos_y + ajuste_altura)
 
 			# Asignar textura según pieza
-			match board[i][j]: 
+			match board[i][j]:
 				-6: holder.texture = B_KING
 				-5: holder.texture = B_QUEEN
 				-4: holder.texture = B_ROOK
