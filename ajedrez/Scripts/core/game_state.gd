@@ -1,5 +1,13 @@
 extends Node
 
+
+## -----------------------------
+## CONFIGURACIÓN DEL JUEGO
+## -----------------------------
+
+const PLAYER_IS_WHITE:  bool = true  # Jugador controla blancas
+const AI_IS_WHITE: bool = false      # IA controla negras
+
 ## -----------------------------
 ## Estado global del juego
 ## -----------------------------
@@ -102,3 +110,8 @@ func _update_rook_flags(from: Vector2i, piece: int) -> void:
 			black_rook_left_moved = true
 		elif from.x == 7:
 			black_rook_right_moved = true
+
+## Verifica si es turno de la IA
+func is_ai_turn() -> bool:
+	# Es turno de IA cuando el turno actual es NEGRAS
+	return not is_white_turn
