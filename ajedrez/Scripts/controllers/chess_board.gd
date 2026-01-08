@@ -187,7 +187,7 @@ func _input(event) -> void:
 	
 	if captura_al_paso:
 		board[pos_origen.y][pos_destino.x] = 0 # Eliminar peón capturado al paso
-
+	
 	# Validar que no se deje en jaque
 	if MoveCalculator.esta_en_jaque(board, GameState.is_white_turn):
 		print("🚫 ¡No puedes ponerte en JAQUE!")
@@ -197,6 +197,15 @@ func _input(event) -> void:
 		if captura_al_paso:
 			board[pos_origen.y][pos_destino.x] = pieza_comida # Restaurar peón enemigo
 		return
+		
+		# --- PROMOCIÓN AUTOMÁTICA A REINA ---
+	if abs(pieza_mover) == 1:
+		# Si las blancas (que empiezan en 0) llegan a 7, o negras (que empiezan en 7) llegan a 0
+		if (pieza_mover > 0 and pos_destino.y == 7) or (pieza_mover < 0 and pos_destino.y == 0):
+			print("✨ ¡PROMOCIÓN! Peón se convierte en Reina")
+			var nueva_reina = 5 if pieza_mover > 0 else -5
+			board[pos_destino.y][pos_destino.x] = nueva_reina
+	# --------------------------------------
 
 	# --- EJECUTAR MOVIMIENTO ESPECIAL: ENROQUE ---
 	# Si el Rey se ha movido 2 casillas, debemos mover la torre también
