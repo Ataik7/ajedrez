@@ -58,7 +58,7 @@ y_sort_enabled = true
 [node name="Turn" type="Sprite2D" parent="."]
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(4, 4)
+zoom = Vector2(3.5, 3.5)
 
 [node name="MarkerInit" type="Marker2D" parent="."]
 position = Vector2(-65, -65)
@@ -75,17 +75,23 @@ anchor_left = -0.041
 anchor_top = -0.069000006
 anchor_right = 0.055000003
 anchor_bottom = -0.024
-offset_left = 73.48
-offset_top = 87.68001
-offset_right = 79.6
-offset_bottom = 88.28
+offset_left = 73.0
+offset_top = 99.0
+offset_right = 79.119995
+offset_bottom = 99.59999
 
 [node name="StatusLabel" type="Label" parent="GameUI/Panel"]
-layout_mode = 0
-offset_left = -232.48001
-offset_top = -182.68001
-offset_right = -48.48001
-offset_bottom = -150.68001
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 8.885
+anchor_top = -13.995001
+anchor_right = 8.885
+anchor_bottom = -13.995001
+offset_left = -221.37616
+offset_top = -191.60313
+offset_right = -37.37616
+offset_bottom = -159.60313
+grow_horizontal = 2
 text = "Turno Blancas"
 label_settings = SubResource("LabelSettings_3dryh")
 horizontal_alignment = 1
@@ -96,10 +102,10 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.358
 anchor_bottom = 0.5
-offset_left = -244.48001
-offset_top = -139.68001
-offset_right = -148.67097
-offset_bottom = -96.98
+offset_left = -122.0
+offset_top = -119.0
+offset_right = -26.190958
+offset_bottom = -76.299995
 theme_override_fonts/font = ExtResource("4_3dryh")
 theme_override_styles/normal = SubResource("StyleBoxFlat_3dryh")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_wowpa")
