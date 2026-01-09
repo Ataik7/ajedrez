@@ -4,8 +4,6 @@ extends Sprite2D
 ## CONFIGURACIÓN
 ## -----------------------------
 
-# YA NO USAMOS @EXPORT PORQUE NO TE SALE.
-# Lo vamos a buscar automáticamente en el _ready
 var game_ui: Node2D
 
 @onready var marker_init: Marker2D = $MarkerInit
@@ -46,6 +44,7 @@ var ai_move_delay: float = 0.8
 ## -----------------------------
 var board: Array = []
 var debug_rect: Rect2
+var visual_moves: Array = [] # Lista para guardar dónde pintar los puntos verdes
 
 ## -----------------------------
 ## READY
@@ -55,15 +54,18 @@ func _ready() -> void:
 	GameState.reset_game()
 
 	# --- BÚSQUEDA AUTOMÁTICA DE LA UI ---
-	# Esto busca en todo el juego un nodo llamado "GameUI"
-	game_ui = get_tree().root.find_child("GameUI", true, false)
+	# Intentamos buscar al hijo directo primero
+	if has_node("GameUI"):
+		game_ui = $GameUI
+	else:
+		# Si no, buscamos en todo el árbol (Plan B)
+		game_ui = find_child("GameUI", true, false)
 	
 	if game_ui:
-		print("✅ CONEXIÓN EXITOSA: He encontrado la UI automáticamente.")
+		print("✅ CONEXIÓN EXITOSA: UI encontrada.")
 		game_ui.update_turn_text(true)
 	else:
-		print("❌ ERROR CRÍTICO: No encuentro ningún nodo llamado 'GameUI'.")
-		print("Asegúrate de que tu nodo CanvasLayer se llame exactamente 'GameUI'.")
+		print("⚠️ AVISO: No encuentro el nodo 'GameUI'. Asegúrate de que se llame así.")
 	# ------------------------------------
 
 	# Configuración inicial del tablero
@@ -123,25 +125,26 @@ func _input(event) -> void:
 
 		GameState.selected_piece = Vector2(grid_x, grid_y)
 		actualizar_debug(grid_x, visual_row, size_x, size_y)
+		
+		# ¡Calculamos las pistas visuales aquí!
+		calcular_pistas_movimiento(grid_x, grid_y)
+		return
+
+	# --- CAMBIAR SELECCIÓN (Si clicas otra pieza tuya) ---
+	var es_tu_pieza = (GameState.is_white_turn and pieza_clicada > 0) or (not GameState.is_white_turn and pieza_clicada < 0)
+	if es_tu_pieza:
+		GameState.selected_piece = Vector2(grid_x, grid_y)
+		actualizar_debug(grid_x, visual_row, size_x, size_y)
+		calcular_pistas_movimiento(grid_x, grid_y)
 		return
 
 	# --- MOVER ---
-	if GameState.is_white_turn:
-		if pieza_clicada > 0:
-			GameState.selected_piece = Vector2(grid_x, grid_y)
-			actualizar_debug(grid_x, visual_row, size_x, size_y)
-			return
-	else:
-		if pieza_clicada < 0:
-			GameState.selected_piece = Vector2(grid_x, grid_y)
-			actualizar_debug(grid_x, visual_row, size_x, size_y)
-			return
-
-	# Validar movimiento
 	var es_legal = MoveCalculator.es_movimiento_valido(board, GameState.selected_piece, Vector2(grid_x, grid_y), GameState)
 
 	if not es_legal:
 		if game_ui: game_ui.show_message("🚫 Movimiento ilegal")
+		visual_moves.clear() # Limpiamos pistas si fallas
+		queue_redraw()
 		return
 
 	var pos_origen = GameState.selected_piece
@@ -168,8 +171,14 @@ func _input(event) -> void:
 		board[pos_origen.y][pos_origen.x] = pieza_mover
 		board[pos_destino.y][pos_destino.x] = pieza_comida if not captura_al_paso else 0
 		if captura_al_paso: board[pos_origen.y][pos_destino.x] = pieza_comida
+		visual_moves.clear() # Limpiamos pistas si fallas
+		queue_redraw()
 		return
 		
+	# --- EXITO: Limpiamos las pistas visuales ---
+	visual_moves.clear()
+	# ------------------------------------------
+
 	# --- PROMOCIÓN AUTOMÁTICA ---
 	if abs(pieza_mover) == 1:
 		if (pieza_mover > 0 and pos_destino.y == 7) or (pieza_mover < 0 and pos_destino.y == 0):
@@ -187,10 +196,14 @@ func _input(event) -> void:
 		board[rook_y][rook_x_destino] = torre
 		board[rook_y][rook_x_origen] = 0
 
-	if pieza_comida != 0:
-		if SFXPlayer: SFXPlayer.play_capture()
-	else:
-		if SFXPlayer: SFXPlayer.play_move()
+	# --- SONIDOS PROTEGIDOS ---
+	if get_tree().root.has_node("SFXPlayer"):
+		var sfx = get_tree().root.get_node("SFXPlayer")
+		if pieza_comida != 0:
+			if sfx.has_method("play_capture"): sfx.play_capture()
+		else:
+			if sfx.has_method("play_move"): sfx.play_move()
+	# --------------------------
 
 	GameState.update_castling_flags(Vector2i(pos_origen), pieza_mover)
 	update_en_passant(Vector2i(pos_origen), Vector2i(pos_destino), pieza_mover)
@@ -216,7 +229,7 @@ func _process(_delta: float) -> void:
 		execute_ai_turn()
 
 func execute_ai_turn() -> void:
-	if game_ui: game_ui.show_message("🤖 IA Pensando...")
+	# if game_ui: game_ui.show_message("🤖 IA Pensando...") # Comentado para no tapar el turno
 	
 	await get_tree().create_timer(ai_move_delay).timeout
 	if not AIPlayer:
@@ -260,10 +273,14 @@ func execute_ai_turn() -> void:
 		board[rook_y][rook_x_destino] = torre
 		board[rook_y][rook_x_origen] = 0
 
-	if pieza_comida != 0:
-		if SFXPlayer: SFXPlayer.play_capture()
-	else:
-		if SFXPlayer: SFXPlayer.play_move()
+	# --- SONIDOS PROTEGIDOS ---
+	if get_tree().root.has_node("SFXPlayer"):
+		var sfx = get_tree().root.get_node("SFXPlayer")
+		if pieza_comida != 0:
+			if sfx.has_method("play_capture"): sfx.play_capture()
+		else:
+			if sfx.has_method("play_move"): sfx.play_move()
+	# --------------------------
 
 	GameState.update_castling_flags(Vector2i(pos_origen), pieza_mover)
 	update_en_passant(Vector2i(pos_origen), Vector2i(pos_destino), pieza_mover)
@@ -290,7 +307,6 @@ func check_game_state() -> void:
 			if game_ui: game_ui.show_message("⚠️ ¡JAQUE!") 
 		else:
 			var winner = "Ganan NEGRAS" if turno_blancas else "Ganan BLANCAS"
-			# --- GAME OVER UI ---
 			if game_ui:
 				game_ui.show_game_over("👑 ¡JAQUE MATE!\n" + winner) 
 			
@@ -298,7 +314,6 @@ func check_game_state() -> void:
 			set_process(false)
 	else:
 		if not tiene_salida:
-			# --- GAME OVER UI ---
 			if game_ui:
 				game_ui.show_game_over("🤝 REY AHOGADO\nEmpate")
 			
@@ -315,6 +330,9 @@ func update_en_passant(from: Vector2i, to: Vector2i, piece: int) -> void:
 	else:
 		GameState.en_passant_target = Vector2i(-1, -1)
 
+## -----------------------------
+## VISUALES Y DEBUG
+## -----------------------------
 func actualizar_debug(gx, visual_r, sx, sy) -> void:
 	var min_x = marker_init.position.x
 	var min_y = marker_init.position.y
@@ -323,10 +341,52 @@ func actualizar_debug(gx, visual_r, sx, sy) -> void:
 	debug_rect = Rect2(draw_x, draw_y, sx, sy)
 	queue_redraw()
 
+func calcular_pistas_movimiento(grid_x: int, grid_y: int) -> void:
+	visual_moves.clear()
+	var origen = Vector2(grid_x, grid_y)
+	
+	for y in range(BOARD_SIZE):
+		for x in range(BOARD_SIZE):
+			var destino = Vector2(x, y)
+			
+			if MoveCalculator.es_movimiento_valido(board, origen, destino, GameState):
+				# Simulación rápida para ver si es suicida (Jaque)
+				var pieza_mover = board[grid_y][grid_x]
+				var pieza_comer = board[y][x]
+				
+				board[y][x] = pieza_mover
+				board[grid_y][grid_x] = 0
+				var deja_rey_en_jaque = MoveCalculator.esta_en_jaque(board, GameState.is_white_turn)
+				board[grid_y][grid_x] = pieza_mover
+				board[y][x] = pieza_comer
+				
+				if not deja_rey_en_jaque:
+					visual_moves.append(Vector2(x, y))
+	
+	queue_redraw() # Pinta los puntos
+
 func _draw() -> void:
+	# 1. Debug (cuadrado rojo de selección)
 	if debug_rect.size.x > 0:
 		draw_rect(debug_rect, Color(1, 1, 0, 0.5), true)
 		draw_rect(debug_rect, Color(1, 0, 0, 1), false, 2.0)
+	
+	# 2. Puntos Verdes de Movimiento
+	var ancho_total = marker_fin.position.x - marker_init.position.x
+	var alto_total = marker_fin.position.y - marker_init.position.y
+	var size_x = ancho_total / BOARD_SIZE
+	var size_y = alto_total / BOARD_SIZE
+	var radio = size_x / 6.0 # Tamaño del punto
+	
+	for move in visual_moves:
+		var grid_x = move.x
+		var visual_row = (BOARD_SIZE - 1) - move.y
+		
+		var draw_x = marker_init.position.x + (grid_x * size_x) + (size_x / 2)
+		var draw_y = marker_init.position.y + (visual_row * size_y) + (size_y / 2)
+		
+		# Círculo verde semitransparente
+		draw_circle(Vector2(draw_x, draw_y), radio, Color(0, 1, 0, 0.6))
 
 func display_board() -> void:
 	for child in pieces.get_children():
