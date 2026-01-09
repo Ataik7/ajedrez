@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://ufm0ficy0rom"]
+[gd_scene load_steps=9 format=3 uid="uid://ufm0ficy0rom"]
 
 [ext_resource type="Texture2D" uid="uid://bwmihvi84sgg2" path="res://Assets/board/board_plain_04.png" id="1_qxrlw"]
 [ext_resource type="Script" uid="uid://w05cq86ynhu" path="res://Scripts/controllers/chess_board.gd" id="2_wrm1d"]
@@ -10,6 +10,39 @@ font = ExtResource("4_3dryh")
 outline_size = 4
 outline_color = Color(0.021434637, 0.021434635, 0.021434633, 1)
 shadow_size = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3dryh"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0.70996386, 0.47933662, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wowpa"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.114948414, 0.3239504, 0.21986869, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i6g32"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.34945393, 0.674599, 0.5470753, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Board" type="Sprite2D"]
 texture = ExtResource("1_qxrlw")
@@ -63,7 +96,12 @@ layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.358
 anchor_bottom = 0.5
-offset_left = -172.48001
-offset_top = -144.68001
-offset_right = -166.67097
-offset_bottom = -136.98001
+offset_left = -244.48001
+offset_top = -139.68001
+offset_right = -148.67097
+offset_bottom = -96.98
+theme_override_fonts/font = ExtResource("4_3dryh")
+theme_override_styles/normal = SubResource("StyleBoxFlat_3dryh")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_wowpa")
+theme_override_styles/hover = SubResource("StyleBoxFlat_i6g32")
+text = "REINICIAR"
